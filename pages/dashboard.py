@@ -1,14 +1,22 @@
 import dash
-from dash import dcc, html, Input, Output, callback, State, ctx, ALL
-from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
-from dash_iconify import DashIconify
 import pandas as pd
 import plotly.graph_objects as go
+from dash import ALL, Input, Output, State, callback, ctx, dcc, html
+from dash.exceptions import PreventUpdate
+from dash_iconify import DashIconify
 from plotly.subplots import make_subplots
-from globals import APP_TITLE, PAGE_HEADER_STYLE, HELP_TEXT_DASHBOARD
-from globals import get_rater_selection, create_help_button, encode_text, decode_text
+
+from globals import (
+    APP_TITLE,
+    HELP_TEXT_DASHBOARD,
+    PAGE_HEADER_STYLE,
+    create_help_button,
+    decode_text,
+    encode_text,
+    get_rater_selection,
+)
 
 dash.register_page(__name__, name='Dashboard', order=5, title=APP_TITLE)
 
@@ -107,7 +115,7 @@ def create_measure_switches(measures_data):
             id={'type': 'measure-switch', 'index': encoded_name},
             label=measure['Name'],
             size='sm',
-            color=measure['Color'],
+            color=measure.get('Color', 'grey'),
             mb=10,
             checked=measure['SelectMeasure'],
         )
@@ -300,7 +308,7 @@ def _add_measure_traces(fig, df, measures_data, selected_measures, x_values, xax
                         name=measure,
                         x=x_values,
                         y=df[measure],
-                        line=dict(color=measure_data['Color']),
+                        line=dict(color=measure_data.get('Color', 'grey')),
                         marker=dict(size=10),
                         mode='lines+markers',
                         connectgaps=True,

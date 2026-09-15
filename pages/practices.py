@@ -1,8 +1,17 @@
 import dash
-from dash import html, dcc, callback, Input, Output, State
-import dash_bootstrap_components as dbc
 import dash_ag_grid as dag
-from globals import APP_TITLE, PAGE_HEADER_STYLE, DEFAULT_ROW_PRACTICE, AG_GRID_THEME, ALERT_DURATION, HELP_TEXT_PRACTICES, create_help_button
+import dash_bootstrap_components as dbc
+from dash import Input, Output, State, callback, html
+
+from globals import (
+    AG_GRID_THEME,
+    ALERT_DURATION,
+    APP_TITLE,
+    DEFAULT_ROW_PRACTICE,
+    HELP_TEXT_PRACTICES,
+    PAGE_HEADER_STYLE,
+    create_help_button,
+)
 
 dash.register_page(__name__, name='Practices', order=3, title=APP_TITLE)
 
@@ -147,8 +156,9 @@ def update_cell(cell_changed, rows, sessions_data):
     if column == 'Name':
         # Keep old value until validation is complete
         updated_rows[index]['Name'] = old_value
-        
-        if not is_valid_name(new_value, sessions_data[0].keys()):
+
+        existing_names = [row['Name'] for row in rows if row['Name'] != old_value]
+        if not is_valid_name(new_value, existing_names):
             alert['message'] = get_alert_message(new_value)
             alert['show'] = True
         else:
@@ -173,9 +183,9 @@ def get_alert_message(name):
     if not name or not name.strip():
         return 'Empty name not allowed. Please choose a different name.'
     elif name.lower() in ['new practice', 'new measure']:
-        return f'Name not allowed. Please choose a different name.'
+        return 'Name not allowed. Please choose a different name.'
     elif '"' in name or  "'" in name:
-        return f'Quotatation marks not allowed. Please choose a different name.'
+        return 'Quotation marks not allowed. Please choose a different name.'
     else:
         return f'Name {name} already in use. Please choose a different name.'
 

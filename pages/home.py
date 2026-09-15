@@ -1,11 +1,25 @@
-import dash
-from dash import html, dcc, callback, Input, Output, State
-import dash_bootstrap_components as dbc
-from dash.exceptions import PreventUpdate
-import json
 import base64
+import json
 from datetime import date
-from globals import APP_TITLE, PAGE_HEADER_STYLE, INSTRUCTIONS, DEFAULT_CLIENT_INFO, DEFAULT_ROW_MEASURE, DEFAULT_ROW_PRACTICE, DEFAULT_ROW_SESSION, EXAMPLE_FILE_PATH, HELP_TEXT_HOME, create_help_button
+
+import dash
+import dash_bootstrap_components as dbc
+from dash import Input, Output, State, callback, dcc, html
+from dash.exceptions import PreventUpdate
+
+from globals import (
+    APP_TITLE,
+    COLORS_MEASURES,
+    DEFAULT_CLIENT_INFO,
+    DEFAULT_ROW_MEASURE,
+    DEFAULT_ROW_PRACTICE,
+    DEFAULT_ROW_SESSION,
+    EXAMPLE_FILE_PATH,
+    HELP_TEXT_HOME,
+    INSTRUCTIONS,
+    PAGE_HEADER_STYLE,
+    create_help_button,
+)
 
 dash.register_page(__name__, path='/', name='Home', order=0, title=APP_TITLE)
 
@@ -187,7 +201,7 @@ def load_data(contents):
             'Record not uploaded. Invalid JSON format.', True, 'danger'
         )
     except Exception as e:
-        print(f"Error loading data: {str(e)}")
+        print(f"Error loading data: {e!s}")
         return (
             dash.no_update, dash.no_update, dash.no_update, dash.no_update,
             'Record not uploaded. Invalid file format.', True, 'danger'
@@ -273,18 +287,6 @@ def sanitize_measure(measure):
         return measure
     
     sanitized = measure.copy()
-    sanitized['Min'] = convert_to_float(measure.get('Min'))
-    sanitized['Max'] = convert_to_float(measure.get('Max'))
-    sanitized['SelectMeasure'] = convert_to_bool(measure.get('SelectMeasure'))
-    sanitized['SelectRater'] = convert_to_bool(measure.get('SelectRater'))
-    return sanitized
-
-def sanitize_measure(measure):
-    """Sanitize a single measure entry."""
-    if not measure:
-        return measure
-    
-    sanitized = measure.copy()
     measure_type = measure.get('Type', 'Scale')
     sanitized['SelectMeasure'] = convert_to_bool(measure.get('SelectMeasure'))
     sanitized['SelectRater'] = convert_to_bool(measure.get('SelectRater'))
@@ -346,6 +348,10 @@ def sanitize_data_types(data):
     # Handle measures
     if 'measures' in data:
         sanitized['measures'] = [sanitize_measure(m) for m in data['measures']]
+        # Backfill Color for measures saved before the field existed, or added by hand
+        for i, measure in enumerate(sanitized['measures']):
+            if not measure.get('Color'):
+                measure['Color'] = COLORS_MEASURES[i % len(COLORS_MEASURES)]
     
     # Handle practices
     if 'practices' in data:

@@ -1,10 +1,20 @@
 import dash
-from dash import html, callback, Input, Output, State
-from dash.exceptions import PreventUpdate
-import dash_bootstrap_components as dbc
 import dash_ag_grid as dag
-from globals import APP_TITLE, PAGE_HEADER_STYLE, COLORS_MEASURES, AG_GRID_THEME, DEFAULT_ROW_MEASURE, ALERT_DURATION, HELP_TEXT_MEASURES, create_help_button
-import time
+import dash_bootstrap_components as dbc
+from dash import Input, Output, State, callback, html
+
+from globals import (
+    AG_GRID_THEME,
+    ALERT_DURATION,
+    APP_TITLE,
+    COLORS_MEASURES,
+    DEFAULT_ROW_MEASURE,
+    HELP_TEXT_MEASURES,
+    PAGE_HEADER_STYLE,
+    create_help_button,
+    get_rater_selection,
+)
+
 dash.register_page(__name__, name='Measures', order=2, title=APP_TITLE)
 
 # AG Grid configuration
@@ -205,9 +215,9 @@ def get_alert_message(name):
     if not name or not name.strip():
         return 'Empty name not allowed. Please choose a different name.'
     elif name.lower() == 'new measure' or name.lower() == 'new practice':
-        return f'Name not allowed. Please choose a different name.'
+        return 'Name not allowed. Please choose a different name.'
     elif '"' in name or  "'" in name:
-        return f'Quotatation marks not allowed. Please choose a different name.'
+        return 'Quotation marks not allowed. Please choose a different name.'
     else:
         return f'Name {name} already in use. Please choose a different name.'
 
@@ -220,15 +230,6 @@ def handle_type_change(index, new_value, rows):
         rows[index]['Min'] = 0
         rows[index]['Max'] = 100
     return rows
-
-def get_rater_selection(measures_data):
-    rater_selection = {}
-    for measure in measures_data:
-        measure_copy = measure.copy()
-        if measure_copy['Rater'] not in rater_selection:
-            rater_selection[measure_copy['Rater']] = measure_copy['SelectRater']
-    rater_selection = dict(sorted(rater_selection.items()))
-    return rater_selection
 
 def handle_rater_change(index, new_value, rows):
     '''Handles changes to the 'Rater' column, adjusting 'SelectMeasure' and 'SelectRater' values accordingly.'''
@@ -266,7 +267,7 @@ def handle_min_max_change(index, column, old_value, new_value, rows, sessions_da
     # Specific validations for 'Count' type
     if rows[index]['Type'] == 'Count':
         rows[index][column] = old_value
-        alert['message'] = f'Min and Max are fixed for measures of Type Count.'
+        alert['message'] = 'Min and Max are fixed for measures of Type Count.'
         alert['show'] = True
         return rows, alert
     
