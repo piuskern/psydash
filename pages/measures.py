@@ -88,7 +88,7 @@ ag_grid_config = {
 # Page layout
 layout = html.Div([
     html.H2('Measures', style=PAGE_HEADER_STYLE),
-    dag.AgGrid(id='measures-grid', **ag_grid_config),
+    html.Div(dag.AgGrid(id='measures-grid', **ag_grid_config), style={'height': 400}),
     dbc.Button(
         'Add Row',
         id='add-row-measures-btn',

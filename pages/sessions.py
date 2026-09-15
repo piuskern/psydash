@@ -37,7 +37,7 @@ ag_grid_config = {
 
 layout = html.Div([
     html.H2('Sessions', style=PAGE_HEADER_STYLE),
-    dag.AgGrid(id='sessions-grid', **ag_grid_config),
+    html.Div(dag.AgGrid(id='sessions-grid', **ag_grid_config), style={'height': 400}),
     html.Div(id='custom-component-checkbox-value-changed-1'),
     dbc.Button(
         'Add Row',

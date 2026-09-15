@@ -1,9 +1,17 @@
 import dash
-from dash import html, dcc
+import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
-from globals import PAGE_HEADER_STYLE, DEFAULT_CLIENT_INFO, DEFAULT_ROW_MEASURE, DEFAULT_ROW_PRACTICE, DEFAULT_ROW_SESSION
-from dash import _dash_renderer
+from dash import _dash_renderer, dcc, html
+
+from globals import (
+    DEFAULT_CLIENT_INFO,
+    DEFAULT_ROW_MEASURE,
+    DEFAULT_ROW_PRACTICE,
+    DEFAULT_ROW_SESSION,
+    PAGE_HEADER_STYLE,
+)
+
 _dash_renderer._set_react_version("18.2.0")
 
 app = dash.Dash(
@@ -109,6 +117,10 @@ app.layout = dmc.MantineProvider(
         dcc.Store(id='sessions-store', data=[DEFAULT_ROW_SESSION], storage_type='session'),
         dcc.Store(id='practices-store', data=[DEFAULT_ROW_PRACTICE], storage_type='session'),
         dcc.Store(id='client-store', data=[DEFAULT_CLIENT_INFO], storage_type='session'),
+        html.Div(
+            dag.AgGrid(id='ag-grid-warmup', rowData=[], columnDefs=[]),
+            style={'position': 'absolute', 'width': 0, 'height': 0, 'overflow': 'hidden'}
+        ),
         html.Div([sidebar, content])
     ],
     theme={'fontSizes': {

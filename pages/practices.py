@@ -58,7 +58,7 @@ ag_grid_config = {
 # Page layout
 layout = html.Div([
     html.H2('Practices', style=PAGE_HEADER_STYLE),
-    dag.AgGrid(id='practices-grid', **ag_grid_config),
+    html.Div(dag.AgGrid(id='practices-grid', **ag_grid_config), style={'height': 400}),
     dbc.Button(
         'Add Row',
         id='add-row-practices-btn', 
